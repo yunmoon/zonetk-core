@@ -4,3 +4,4 @@ export * from './interface';
 export * from "./decorators";
 export * from "typeorm";
 export * from "./base";
+export { MidwayRequestContainer } from "midway-core";

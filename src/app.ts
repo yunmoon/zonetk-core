@@ -7,7 +7,7 @@ import {
   WEB_ROUTER_KEY,
 } from '@midwayjs/decorator';
 import { getClassMetadata, getProviderId, listModule } from 'injection';
-import { ContainerLoader, MidwayContainer } from 'midway-core';
+import { ContainerLoader, MidwayContainer, MidwayRequestContainer } from 'midway-core';
 import { join } from 'path';
 import * as KOAApplication from 'koa';
 import { WebMiddleware } from './interface';
@@ -163,8 +163,8 @@ export class ZonetkApplication extends KOAApplication {
 
   private prepareContext() {
     this.use(async (ctx, next) => {
-      ctx.requestContext = this.applicationContext.get('requestContext');
-      ctx.requestContext.updateContext(ctx);
+      ctx.requestContext = new MidwayRequestContainer(this.applicationContext, ctx);
+      this.applicationContext.registerObject("requestContext", ctx.requestContext);
       await next();
     });
   }

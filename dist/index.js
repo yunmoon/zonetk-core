@@ -8,4 +8,6 @@ __export(require("./app"));
 __export(require("./decorators"));
 __export(require("typeorm"));
 __export(require("./base"));
+var midway_core_1 = require("midway-core");
+exports.MidwayRequestContainer = midway_core_1.MidwayRequestContainer;
 //# sourceMappingURL=index.js.map

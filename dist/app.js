@@ -133,8 +133,8 @@ class ZonetkApplication extends KOAApplication {
     }
     prepareContext() {
         this.use(async (ctx, next) => {
-            ctx.requestContext = this.applicationContext.get('requestContext');
-            ctx.requestContext.updateContext(ctx);
+            ctx.requestContext = new midway_core_1.MidwayRequestContainer(this.applicationContext, ctx);
+            this.applicationContext.registerObject("requestContext", ctx.requestContext);
             await next();
         });
     }
