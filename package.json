@@ -1,0 +1,37 @@
+{
+  "name": "zonetk-core",
+  "version": "1.0.0",
+  "description": "zonetk框架核心代码",
+  "main": "dist/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "@midwayjs/decorator": "^1.5.6",
+    "config": "^3.2.2",
+    "debug": "^4.1.1",
+    "injection": "^1.4.2",
+    "koa": "^2.7.0",
+    "koa-router": " ^7.4.0",
+    "midway-core": "^1.6.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.18",
+    "winston": "^3.2.1",
+    "mysql2": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.0.48",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.18",
+    "@types/winston": "^2.4.4",
+    "midway-bin": "1",
+    "supertest": "^4.0.2",
+    "tslint": "^5.17.0",
+    "tslint-midway-contrib": "^1.5.0",
+    "typescript": "^3.5.1"
+  },
+  "typings": "dist/index.d.ts",
+  "author": "meiyun",
+  "license": "MIT"
+}
