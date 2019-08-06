@@ -1,17 +1,17 @@
-import { Repository, getRepository, EntityManager } from "typeorm";
+import { Repository, getRepository, EntityManager, FindManyOptions, FindOneOptions, ObjectType } from "typeorm";
 import { inject } from "injection";
 import { logger, config } from "../decorators";
 
-export class BaseService {
+export class BaseService<T>{
   @inject()
   ctx;
   @logger()
   log
   @config("db")
   dbConfig
-  repository: Repository<any>;
+  repository: Repository<T>;
 
-  constructor(private entity) {
+  constructor(private entity: ObjectType<T>) {
     this.repository = getRepository(this.entity);
   }
   getLogger() {
@@ -25,14 +25,25 @@ export class BaseService {
     }
     return repository;
   }
-  async findOne(where: any, tm?: EntityManager) {
-
-    return await this.getRepository(tm).findOne(where)
+  findOne(options?: FindOneOptions<T>, tm?: EntityManager) {
+    return this.getRepository(tm).findOne(options);
   }
-  async find(where, tm?: EntityManager) {
-    return await this.getRepository(tm).find(where)
+  findById(id?: string | number, tm?: EntityManager) {
+    return this.getRepository(tm).findOne(id);
   }
-  async save(data, tm?: EntityManager) {
-    return await this.getRepository(tm).save(data, { data: { ctx: this.ctx } })
+  find(options?: FindManyOptions<T>, tm?: EntityManager) {
+    return this.getRepository(tm).find(options);
+  }
+  findAndCount(options?: FindManyOptions<T>, tm?: EntityManager) {
+    return this.getRepository(tm).findAndCount(options);
+  }
+  delete(options, tm?: EntityManager) {
+    return this.getRepository(tm).delete(options)
+  }
+  count(options: FindManyOptions, tm?: EntityManager) {
+    return this.getRepository(tm).count(options)
+  }
+  save(data, tm?: EntityManager) {
+    return this.getRepository(tm).save(data);
   }
 }

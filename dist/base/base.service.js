@@ -25,14 +25,26 @@ class BaseService {
         }
         return repository;
     }
-    async findOne(where, tm) {
-        return await this.getRepository(tm).findOne(where);
+    findOne(options, tm) {
+        return this.getRepository(tm).findOne(options);
     }
-    async find(where, tm) {
-        return await this.getRepository(tm).find(where);
+    findById(id, tm) {
+        return this.getRepository(tm).findOne(id);
     }
-    async save(data, tm) {
-        return await this.getRepository(tm).save(data, { data: { ctx: this.ctx } });
+    find(options, tm) {
+        return this.getRepository(tm).find(options);
+    }
+    findAndCount(options, tm) {
+        return this.getRepository(tm).findAndCount(options);
+    }
+    delete(options, tm) {
+        return this.getRepository(tm).delete(options);
+    }
+    count(options, tm) {
+        return this.getRepository(tm).count(options);
+    }
+    save(data, tm) {
+        return this.getRepository(tm).save(data);
     }
 }
 __decorate([
