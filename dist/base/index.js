@@ -6,4 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./base.controller"));
 __export(require("./base.service"));
 __export(require("./base.middleware"));
+__export(require("./base.plugin"));
 //# sourceMappingURL=index.js.map

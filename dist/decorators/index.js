@@ -6,4 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./config"));
 __export(require("./logger"));
 __export(require("./midwayjs-decorator"));
+__export(require("./plugin"));
 //# sourceMappingURL=index.js.map
