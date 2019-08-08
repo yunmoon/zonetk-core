@@ -6,7 +6,7 @@ const DailyRotateFile = require("winston-daily-rotate-file");
 const configFunc = require("config");
 const appDir = process.cwd();
 const { combine, timestamp, label, printf } = winston.format;
-const level = configFunc.get("logLevel") || "info";
+const logConfig = Object.assign({ level: "info", filename: 'output-%DATE%.log', dirname: `${appDir}/logs`, datePattern: 'YYYY-MM-DD-HH', zippedArchive: true, maxSize: '20m', maxFiles: '15d' }, configFunc.get("logger"));
 const myFormat = printf((data) => {
     const { level, message, label, timestamp, requestId } = data;
     return JSON.stringify({
@@ -17,16 +17,8 @@ const myFormat = printf((data) => {
         date: moment(timestamp).format("YYYY-MM-DD HH:mm:ss.SSS")
     });
 });
-const transport = new DailyRotateFile({
-    filename: 'output-%DATE%.log',
-    dirname: `${appDir}/logs`,
-    datePattern: 'YYYY-MM-DD-HH',
-    zippedArchive: true,
-    maxSize: '20m',
-    maxFiles: '15d'
-});
+const transport = new DailyRotateFile(logConfig);
 const winstonLogger = winston.createLogger({
-    level,
     format: combine(label({ label: process.env.APP_NAME || "" }), timestamp(), myFormat),
     transports: [
         new winston.transports.Console(),

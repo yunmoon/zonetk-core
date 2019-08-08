@@ -1,6 +1,6 @@
 {
   "name": "zonetk-core",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "zonetk框架核心代码",
   "main": "dist/index",
   "scripts": {
