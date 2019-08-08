@@ -5,6 +5,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("injection"));
 __export(require("./app"));
+__export(require("./interface"));
 __export(require("./decorators"));
 __export(require("typeorm"));
 __export(require("./base"));

@@ -24,6 +24,9 @@ class BaseController {
             });
         });
     }
+    async transform(item, transformerObj) {
+        return await transformerObj.resolve(item);
+    }
 }
 __decorate([
     decorators_1.logger()
