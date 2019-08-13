@@ -1,11 +1,14 @@
 import { Repository, EntityManager, FindManyOptions, FindOneOptions, ObjectType } from "typeorm";
+import { BaseContext } from "koa";
 export declare class BaseService<T> {
     private entity;
-    ctx: any;
+    ctx: BaseContext;
     log: any;
     dbConfig: any;
     repository: Repository<T>;
+    requestId: any;
     constructor(entity: ObjectType<T>);
+    updateRequestId(requestId: string): void;
     getLogger(): any;
     getRepository(tm?: EntityManager): Repository<T>;
     findOne(options?: FindOneOptions<T>, tm?: EntityManager): Promise<T>;

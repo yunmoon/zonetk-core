@@ -14,9 +14,14 @@ class BaseService {
         this.entity = entity;
         this.repository = typeorm_1.getRepository(this.entity);
     }
+    updateRequestId(requestId) {
+        this.requestId = requestId;
+    }
     getLogger() {
-        const requestId = this.ctx.get("request-id") || "";
-        return this.log.child({ requestId });
+        if (this.ctx) {
+            this.requestId = this.ctx.get("request-id") || "";
+        }
+        return this.log.child({ requestId: this.requestId });
     }
     getRepository(tm) {
         let repository = this.repository;

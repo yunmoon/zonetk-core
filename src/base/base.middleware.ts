@@ -1,11 +1,11 @@
 import { logger } from "../decorators";
-import { Context } from "koa";
+import { BaseContext } from "koa";
 
 export class BaseMiddleware {
   @logger()
   log: any
 
-  ctx: Context;
+  ctx: BaseContext;
 
   getLogger() {
     const requestId = this.ctx.get("request-id") || ""

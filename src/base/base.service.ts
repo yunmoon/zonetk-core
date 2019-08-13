@@ -1,11 +1,11 @@
 import { Repository, getRepository, EntityManager, FindManyOptions, FindOneOptions, ObjectType } from "typeorm";
 import { inject } from "injection";
 import { logger, config } from "../decorators";
-import { Context } from "koa";
+import { BaseContext } from "koa";
 
 export class BaseService<T>{
   @inject()
-  ctx: Context;
+  ctx: BaseContext;
   @logger()
   log
   @config("db")
