@@ -2,13 +2,14 @@ import { getManager, EntityManager } from "typeorm";
 import { logger } from "../decorators";
 import { inject } from "injection";
 import { Transformer } from "../interface";
+import { Context } from "koa";
 export class BaseController {
 
   @logger()
   log
 
   @inject()
-  ctx
+  ctx: Context;
 
   getLogger() {
     const requestId = this.ctx.get("request-id") || ""

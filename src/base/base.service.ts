@@ -1,22 +1,30 @@
 import { Repository, getRepository, EntityManager, FindManyOptions, FindOneOptions, ObjectType } from "typeorm";
 import { inject } from "injection";
 import { logger, config } from "../decorators";
+import { Context } from "koa";
 
 export class BaseService<T>{
   @inject()
-  ctx;
+  ctx: Context;
   @logger()
   log
   @config("db")
   dbConfig
   repository: Repository<T>;
 
+  requestId
+
   constructor(private entity: ObjectType<T>) {
     this.repository = getRepository(this.entity);
   }
+  updateRequestId(requestId: string) {
+    this.requestId = requestId
+  }
   getLogger() {
-    const requestId = this.ctx.get("request-id") || ""
-    return this.log.child({ requestId });
+    if (this.ctx) {
+      this.requestId = this.ctx.get("request-id") || ""
+    }
+    return this.log.child({ requestId: this.requestId });
   }
   getRepository(tm?: EntityManager) {
     let repository = this.repository;
