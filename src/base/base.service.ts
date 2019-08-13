@@ -2,7 +2,7 @@ import { Repository, getRepository, EntityManager, FindManyOptions, FindOneOptio
 import { inject } from "injection";
 import { logger, config } from "../decorators";
 import { BaseContext } from "koa";
-import { QueryPartialEntity, QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 export class BaseService<T>{
   @inject()

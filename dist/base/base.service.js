@@ -36,7 +36,7 @@ class BaseService {
     findById(id, tm) {
         return this.getRepository(tm).findOne(id);
     }
-    find(options, tm) {
+    findAll(options, tm) {
         return this.getRepository(tm).find(options);
     }
     findAndCount(options, tm) {
@@ -50,6 +50,9 @@ class BaseService {
     }
     save(data, tm) {
         return this.getRepository(tm).save(data);
+    }
+    update(where, data, tm) {
+        return this.getRepository(tm).update(where, data);
     }
 }
 __decorate([
