@@ -1,7 +1,8 @@
-import { Repository, getRepository, EntityManager, FindManyOptions, FindOneOptions, ObjectType } from "typeorm";
+import { Repository, getRepository, EntityManager, FindManyOptions, FindOneOptions, ObjectType, FindConditions } from "typeorm";
 import { inject } from "injection";
 import { logger, config } from "../decorators";
 import { BaseContext } from "koa";
+import { QueryPartialEntity, QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 export class BaseService<T>{
   @inject()
@@ -39,7 +40,7 @@ export class BaseService<T>{
   findById(id?: string | number, tm?: EntityManager) {
     return this.getRepository(tm).findOne(id);
   }
-  find(options?: FindManyOptions<T>, tm?: EntityManager) {
+  findAll(options?: FindManyOptions<T>, tm?: EntityManager) {
     return this.getRepository(tm).find(options);
   }
   findAndCount(options?: FindManyOptions<T>, tm?: EntityManager) {
@@ -53,5 +54,8 @@ export class BaseService<T>{
   }
   save(data, tm?: EntityManager) {
     return this.getRepository(tm).save(data);
+  }
+  update(where: FindConditions<T>, data: QueryDeepPartialEntity<T>, tm?: EntityManager) {
+    return this.getRepository(tm).update(where, data);
   }
 }
