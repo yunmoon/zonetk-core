@@ -5,11 +5,18 @@ export declare class ZonetkApplication extends KOAApplication {
     baseDir: any;
     loader: ContainerLoader;
     private controllerIds;
+    private rpcServiceIds;
+    private rpcFuncIds;
     private prioritySortRouters;
+    rpc: any;
+    logger: any;
     constructor(options?: {
         baseDir?: string;
     });
     getBaseDir(): string;
+    runRpcServer(): Promise<void>;
+    loadRpcServiceFunc(): Promise<{}>;
+    initRpcClient(): Promise<void>;
     loadController(): Promise<void>;
     protected preRegisterRouter(target: any, controllerId: any): Promise<void>;
     private handlerWebMiddleware;

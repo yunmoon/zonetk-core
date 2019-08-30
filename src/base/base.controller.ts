@@ -1,5 +1,5 @@
 import { getManager, EntityManager } from "typeorm";
-import { logger } from "../decorators";
+import { logger, config } from "../decorators";
 import { inject } from "injection";
 import { Transformer } from "../interface";
 import { BaseContext } from "koa";
@@ -11,8 +11,12 @@ export class BaseController {
   @inject()
   ctx: BaseContext;
 
+  @config()
+  requestIdKey
+
   getLogger() {
-    const requestId = this.ctx.get("request-id") || ""
+    const requestIdKey = this.requestIdKey || "x-request-id";
+    const requestId = this.ctx.get(requestIdKey) || ""
     return this.log.child({ requestId });
   }
   transaction(doFunc: (tm: EntityManager) => any) {

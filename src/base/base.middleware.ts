@@ -1,4 +1,4 @@
-import { logger } from "../decorators";
+import { logger, config } from "../decorators";
 import { BaseContext } from "koa";
 
 export class BaseMiddleware {
@@ -7,8 +7,12 @@ export class BaseMiddleware {
 
   ctx: BaseContext;
 
+  @config()
+  requestIdKey
+
   getLogger() {
-    const requestId = this.ctx.get("request-id") || ""
+    const requestIdKey = this.requestIdKey || "x-request-id";
+    const requestId = this.ctx.get(requestIdKey) || ""
     return this.log.child({ requestId });
   }
 }

@@ -9,12 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const decorators_1 = require("../decorators");
 class BaseMiddleware {
     getLogger() {
-        const requestId = this.ctx.get("request-id") || "";
+        const requestIdKey = this.requestIdKey || "x-request-id";
+        const requestId = this.ctx.get(requestIdKey) || "";
         return this.log.child({ requestId });
     }
 }
 __decorate([
     decorators_1.logger()
 ], BaseMiddleware.prototype, "log", void 0);
+__decorate([
+    decorators_1.config()
+], BaseMiddleware.prototype, "requestIdKey", void 0);
 exports.BaseMiddleware = BaseMiddleware;
 //# sourceMappingURL=base.middleware.js.map

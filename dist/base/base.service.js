@@ -14,14 +14,13 @@ class BaseService {
         this.entity = entity;
         this.repository = typeorm_1.getRepository(this.entity);
     }
-    updateRequestId(requestId) {
-        this.requestId = requestId;
-    }
     getLogger() {
+        let requestId = "";
         if (this.ctx) {
-            this.requestId = this.ctx.get("request-id") || "";
+            const requestIdKey = this.requestIdKey || "x-request-id";
+            requestId = this.ctx.get(requestIdKey) || "";
         }
-        return this.log.child({ requestId: this.requestId });
+        return this.log.child({ requestId: requestId });
     }
     getRepository(tm) {
         let repository = this.repository;
@@ -64,5 +63,8 @@ __decorate([
 __decorate([
     decorators_1.config("db")
 ], BaseService.prototype, "dbConfig", void 0);
+__decorate([
+    decorators_1.config()
+], BaseService.prototype, "requestIdKey", void 0);
 exports.BaseService = BaseService;
 //# sourceMappingURL=base.service.js.map

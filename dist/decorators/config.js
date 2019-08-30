@@ -4,8 +4,13 @@ const configFunc = require("config");
 function config(str) {
     return (target, key) => {
         const configKey = str || key;
-        const value = configFunc.get(configKey);
-        target[key] = value;
+        try {
+            const value = configFunc.get(configKey);
+            target[key] = value;
+        }
+        catch (error) {
+            target[key] = null;
+        }
     };
 }
 exports.config = config;

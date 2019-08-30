@@ -1,3 +1,20 @@
+import {
+  controller,
+  get,
+  post,
+  put,
+  del,
+  patch,
+  all,
+} from '@midwayjs/decorator';
+const Http = {
+  get,
+  post,
+  put,
+  del,
+  patch,
+  all
+}
 export {
   controller,
   get,
@@ -5,5 +22,6 @@ export {
   put,
   del,
   patch,
-  all
-} from '@midwayjs/decorator';
+  all,
+  Http
+}

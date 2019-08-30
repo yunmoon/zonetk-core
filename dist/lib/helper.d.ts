@@ -1,0 +1,13 @@
+import { EntityManager } from "typeorm";
+/**
+ *
+ * 获取数据库事务
+ * @export
+ * @param {(tm: EntityManager) => any} doFunc
+ * @returns
+ */
+export declare function getTransaction(doFunc: (tm: EntityManager) => any): Promise<unknown>;
+export declare function getAllMethods(obj: any): any[];
+export declare function generateKeyFunc(methods: string[], obj: any): any;
+export declare function setRpcClient(client: string, obj: any): void;
+export declare function getRpcClient(client: string): any;

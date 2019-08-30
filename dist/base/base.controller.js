@@ -11,7 +11,8 @@ const decorators_1 = require("../decorators");
 const injection_1 = require("injection");
 class BaseController {
     getLogger() {
-        const requestId = this.ctx.get("request-id") || "";
+        const requestIdKey = this.requestIdKey || "x-request-id";
+        const requestId = this.ctx.get(requestIdKey) || "";
         return this.log.child({ requestId });
     }
     transaction(doFunc) {
@@ -34,5 +35,8 @@ __decorate([
 __decorate([
     injection_1.inject()
 ], BaseController.prototype, "ctx", void 0);
+__decorate([
+    decorators_1.config()
+], BaseController.prototype, "requestIdKey", void 0);
 exports.BaseController = BaseController;
 //# sourceMappingURL=base.controller.js.map

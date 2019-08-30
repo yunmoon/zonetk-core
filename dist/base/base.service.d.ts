@@ -7,9 +7,8 @@ export declare class BaseService<T> {
     log: any;
     dbConfig: any;
     repository: Repository<T>;
-    requestId: any;
+    requestIdKey: any;
     constructor(entity: ObjectType<T>);
-    updateRequestId(requestId: string): void;
     getLogger(): any;
     getRepository(tm?: EntityManager): Repository<T>;
     findOne(options?: FindOneOptions<T>, tm?: EntityManager): Promise<T>;

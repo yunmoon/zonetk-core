@@ -9,6 +9,8 @@ __export(require("./interface"));
 __export(require("./decorators"));
 __export(require("typeorm"));
 __export(require("./base"));
+// export * from "./constant";
+__export(require("./lib"));
 var midway_core_1 = require("midway-core");
 exports.MidwayRequestContainer = midway_core_1.MidwayRequestContainer;
 //# sourceMappingURL=index.js.map

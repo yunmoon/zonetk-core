@@ -7,25 +7,28 @@ import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity
 export class BaseService<T>{
   @inject()
   ctx: BaseContext;
+
   @logger()
   log
+
   @config("db")
   dbConfig
+
   repository: Repository<T>;
 
-  requestId
+  @config()
+  requestIdKey
 
   constructor(private entity: ObjectType<T>) {
     this.repository = getRepository(this.entity);
   }
-  updateRequestId(requestId: string) {
-    this.requestId = requestId
-  }
   getLogger() {
+    let requestId = "";
     if (this.ctx) {
-      this.requestId = this.ctx.get("request-id") || ""
+      const requestIdKey = this.requestIdKey || "x-request-id";
+      requestId = this.ctx.get(requestIdKey) || ""
     }
-    return this.log.child({ requestId: this.requestId });
+    return this.log.child({ requestId: requestId });
   }
   getRepository(tm?: EntityManager) {
     let repository = this.repository;

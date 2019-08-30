@@ -1,4 +1,10 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const decorator_1 = require("@midwayjs/decorator");
 const injection_1 = require("injection");
@@ -6,6 +12,10 @@ const midway_core_1 = require("midway-core");
 const path_1 = require("path");
 const KOAApplication = require("koa");
 const Router = require("koa-router");
+const decorators_1 = require("./decorators");
+const sofaRpc = require("sofa-rpc-node");
+const constant_1 = require("./constant");
+const lib_1 = require("./lib");
 function isTypeScriptEnvironment() {
     return !!require.extensions['.ts'];
 }
@@ -13,6 +23,8 @@ class ZonetkApplication extends KOAApplication {
     constructor(options = {}) {
         super();
         this.controllerIds = [];
+        this.rpcServiceIds = [];
+        this.rpcFuncIds = [];
         this.prioritySortRouters = [];
         this.appDir = options.baseDir || process.cwd();
         this.baseDir = this.getBaseDir();
@@ -30,6 +42,76 @@ class ZonetkApplication extends KOAApplication {
         }
         else {
             return path_1.join(this.appDir, 'dist');
+        }
+    }
+    async runRpcServer() {
+        if (this.rpc && this.rpc.server) {
+            const zookeeperAddress = (this.rpc.zookeeper && this.rpc.zookeeper.address) || "127.0.0.1:2181";
+            const registry = new sofaRpc.registry.ZookeeperRegistry({
+                logger: console,
+                address: zookeeperAddress,
+            });
+            const rpcServer = new sofaRpc.server.RpcServer({
+                logger: console,
+                registry,
+                port: this.rpc.server.port || 12200,
+            });
+            if (!this.rpc.server.service) {
+                throw new Error("config rpc.server.service is required");
+            }
+            const serviceFuncs = await this.loadRpcServiceFunc();
+            rpcServer.addService({
+                interfaceName: this.rpc.server.service,
+            }, serviceFuncs);
+            // 4. 启动 Server 并发布服务
+            await rpcServer.start();
+            await rpcServer.publish();
+        }
+    }
+    async loadRpcServiceFunc() {
+        const rpcServiceModules = injection_1.listModule(constant_1.RPC_KEY);
+        let serviceFuncs = {};
+        for (const module of rpcServiceModules) {
+            const providerId = injection_1.getProviderId(module);
+            if (providerId) {
+                if (this.rpcServiceIds.indexOf(providerId) > -1) {
+                    throw new Error(`rpcService identifier [${providerId}] is exists!`);
+                }
+                this.rpcServiceIds.push(providerId);
+                const moduleDefinition = await this.applicationContext.getAsync(providerId);
+                const moduleServiceFuncs = lib_1.getAllMethods(moduleDefinition);
+                for (const func of moduleServiceFuncs) {
+                    if (this.rpcFuncIds.includes(func)) {
+                        throw new Error(`rpcService func [${func}] is exists!`);
+                    }
+                    this.rpcFuncIds.push(func);
+                }
+                serviceFuncs = Object.assign({}, serviceFuncs, lib_1.generateKeyFunc(moduleServiceFuncs, moduleDefinition));
+            }
+        }
+        return serviceFuncs;
+    }
+    async initRpcClient() {
+        if (this.rpc && this.rpc.client) {
+            const zookeeperAddress = (this.rpc.zookeeper && this.rpc.zookeeper.address) || "127.0.0.1:2181";
+            const registry = new sofaRpc.registry.ZookeeperRegistry({
+                logger: console,
+                address: zookeeperAddress,
+            });
+            const client = new sofaRpc.client.RpcClient({
+                logger: console,
+                registry,
+            });
+            const clientNames = Object.keys(this.rpc.client);
+            for (let index = 0; index < clientNames.length; index++) {
+                const clientName = clientNames[index];
+                const consumer = client.createConsumer({
+                    interfaceName: this.rpc.client[clientName],
+                });
+                // 4. 等待 consumer ready（从注册中心订阅服务列表...）
+                await consumer.ready();
+                lib_1.setRpcClient(clientName, consumer);
+            }
         }
     }
     async loadController() {
@@ -129,6 +211,8 @@ class ZonetkApplication extends KOAApplication {
     }
     async ready() {
         await this.loader.refresh();
+        await this.runRpcServer();
+        await this.initRpcClient();
         this.loadController();
     }
     prepareContext() {
@@ -142,5 +226,11 @@ class ZonetkApplication extends KOAApplication {
         return this.loader.getApplicationContext();
     }
 }
+__decorate([
+    decorators_1.config()
+], ZonetkApplication.prototype, "rpc", void 0);
+__decorate([
+    decorators_1.logger()
+], ZonetkApplication.prototype, "logger", void 0);
 exports.ZonetkApplication = ZonetkApplication;
 //# sourceMappingURL=app.js.map
