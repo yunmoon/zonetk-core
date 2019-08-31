@@ -81,12 +81,12 @@ class ZonetkApplication extends KOAApplication {
                 const moduleDefinition = await this.applicationContext.getAsync(providerId);
                 const moduleServiceFuncs = lib_1.getAllMethods(moduleDefinition);
                 for (const func of moduleServiceFuncs) {
-                    if (this.rpcFuncIds.includes(func)) {
-                        throw new Error(`rpcService func [${func}] is exists!`);
+                    if (this.rpcFuncIds.includes(`${providerId}.${func}`)) {
+                        throw new Error(`rpcService func [${providerId}.${func}] is exists!`);
                     }
-                    this.rpcFuncIds.push(func);
+                    this.rpcFuncIds.push(`${providerId}.${func}`);
                 }
-                serviceFuncs = Object.assign({}, serviceFuncs, lib_1.generateKeyFunc(moduleServiceFuncs, moduleDefinition));
+                serviceFuncs = Object.assign({}, serviceFuncs, lib_1.generateKeyFunc(moduleServiceFuncs, moduleDefinition, providerId));
             }
         }
         return serviceFuncs;
@@ -108,7 +108,7 @@ class ZonetkApplication extends KOAApplication {
                 const consumer = client.createConsumer({
                     interfaceName: this.rpc.client[clientName],
                 });
-                // 4. 等待 consumer ready（从注册中心订阅服务列表...）
+                //等待 consumer ready（从注册中心订阅服务列表...）
                 await consumer.ready();
                 lib_1.setRpcClient(clientName, consumer);
             }
