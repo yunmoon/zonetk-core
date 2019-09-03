@@ -5,11 +5,12 @@ import * as configFunc from "config";
 
 const appDir = process.cwd();
 const { combine, timestamp, label, printf } = winston.format;
+const procIndex = process.env.NODE_APP_INSTANCE === null ? 0 : process.env.NODE_APP_INSTANCE;
 const logConfig: DailyRotateFile.DailyRotateFileTransportOptions = {
   level: "info",
   filename: 'output-%DATE%.log',
-  dirname: `${appDir}/logs`,
-  datePattern: 'YYYY-MM-DD-HH',
+  dirname: `${appDir}/logs/${procIndex}`,
+  datePattern: 'YYYY-MM-DD',
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '15d',
