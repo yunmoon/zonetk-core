@@ -6,7 +6,8 @@ const DailyRotateFile = require("winston-daily-rotate-file");
 const configFunc = require("config");
 const appDir = process.cwd();
 const { combine, timestamp, label, printf } = winston.format;
-const logConfig = Object.assign({ level: "info", filename: 'output-%DATE%.log', dirname: `${appDir}/logs`, datePattern: 'YYYY-MM-DD-HH', zippedArchive: true, maxSize: '20m', maxFiles: '15d' }, configFunc.get("logger"));
+const procIndex = process.env.NODE_APP_INSTANCE === null ? 0 : process.env.NODE_APP_INSTANCE;
+const logConfig = Object.assign({ level: "info", filename: 'output-%DATE%.log', dirname: `${appDir}/logs/${procIndex}`, datePattern: 'YYYY-MM-DD', zippedArchive: true, maxSize: '20m', maxFiles: '15d' }, configFunc.get("logger"));
 const myFormat = printf((data) => {
     const { level, message, label, timestamp, requestId } = data;
     return JSON.stringify({
