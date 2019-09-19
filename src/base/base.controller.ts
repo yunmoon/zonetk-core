@@ -3,10 +3,11 @@ import { logger, config } from "../decorators";
 import { inject } from "injection";
 import { Transformer } from "../interface";
 import { BaseContext } from "koa";
+import { Logger } from "winston";
 export class BaseController {
 
   @logger()
-  log
+  log: Logger
 
   @inject()
   ctx: BaseContext;

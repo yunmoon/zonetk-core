@@ -1,9 +1,10 @@
 import { logger, config } from "../decorators";
 import { BaseContext } from "koa";
+import { Logger } from "winston";
 
 export class BaseMiddleware {
   @logger()
-  log: any
+  log: Logger
 
   ctx: BaseContext;
 

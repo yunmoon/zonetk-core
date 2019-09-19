@@ -8,4 +8,5 @@ __export(require("./logger"));
 __export(require("./midwayjs-decorator"));
 __export(require("./plugin"));
 __export(require("./rpc"));
+__export(require("./schedule"));
 //# sourceMappingURL=index.js.map

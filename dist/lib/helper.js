@@ -1,6 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
+const schedule = require("node-schedule");
+const _ = require("lodash");
+function _interval(intr, end = 60) {
+    let i = 0, arr = [], res;
+    while ((res = intr * i++) < end) {
+        arr.push(res);
+    }
+    return arr;
+}
 const rpcClient = {};
 /**
  *
@@ -60,4 +69,30 @@ function getRpcClient(client) {
     return rpcClient[client];
 }
 exports.getRpcClient = getRpcClient;
+function getScheduleRule(option) {
+    let rule = new schedule.RecurrenceRule();
+    if (option.second !== undefined && option.second !== null) {
+        rule.second = _.isArray(option.second) && option.second.length === 1 ? _interval(option.second) : option.second;
+    }
+    if (option.minute !== undefined && option.minute !== null) {
+        rule.minute = _.isArray(option.minute) && option.minute.length === 1 ? _interval(option.minute) : option.minute;
+    }
+    if (option.hour !== undefined && option.hour !== null) {
+        rule.hour = option.hour;
+    }
+    if (option.date !== undefined && option.date !== null) {
+        rule.date = option.date;
+    }
+    if (option.month !== undefined && option.month !== null) {
+        rule.month = option.month;
+    }
+    if (option.year !== undefined && option.year !== null) {
+        rule.year = option.year;
+    }
+    if (option.dayOfWeek !== undefined && option.dayOfWeek !== null) {
+        rule.dayOfWeek = option.dayOfWeek;
+    }
+    return rule;
+}
+exports.getScheduleRule = getScheduleRule;
 //# sourceMappingURL=helper.js.map

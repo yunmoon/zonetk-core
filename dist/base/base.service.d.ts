@@ -1,15 +1,16 @@
 import { Repository, EntityManager, FindManyOptions, FindOneOptions, ObjectType, FindConditions } from "typeorm";
 import { BaseContext } from "koa";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { Logger } from "winston";
 export declare class BaseService<T> {
     private entity;
     ctx: BaseContext;
-    log: any;
+    log: Logger;
     dbConfig: any;
     repository: Repository<T>;
     requestIdKey: any;
     constructor(entity: ObjectType<T>);
-    getLogger(): any;
+    getLogger(): Logger;
     getRepository(tm?: EntityManager): Repository<T>;
     findOne(options?: FindOneOptions<T>, tm?: EntityManager): Promise<T>;
     findById(id?: string | number, tm?: EntityManager): Promise<T>;

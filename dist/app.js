@@ -16,6 +16,11 @@ const decorators_1 = require("./decorators");
 const sofaRpc = require("sofa-rpc-node");
 const constant_1 = require("./constant");
 const lib_1 = require("./lib");
+const os = require("os");
+const _ = require("lodash");
+const schedule = require("node-schedule");
+const hostname = os.hostname();
+const env = process.env.NODE_ENV || "development";
 function isTypeScriptEnvironment() {
     return !!require.extensions['.ts'];
 }
@@ -24,6 +29,7 @@ class ZonetkApplication extends KOAApplication {
         super();
         this.controllerIds = [];
         this.rpcServiceIds = [];
+        this.scheduleIds = [];
         this.rpcFuncIds = [];
         this.prioritySortRouters = [];
         this.appDir = options.baseDir || process.cwd();
@@ -111,6 +117,32 @@ class ZonetkApplication extends KOAApplication {
                 //等待 consumer ready（从注册中心订阅服务列表...）
                 await consumer.ready();
                 lib_1.setRpcClient(clientName, consumer);
+            }
+        }
+    }
+    async loadSchedule() {
+        const scheduleModules = injection_1.listModule(constant_1.SCHEDULE_KEY);
+        for (const module of scheduleModules) {
+            const providerId = injection_1.getProviderId(module);
+            if (providerId) {
+                if (this.scheduleIds.indexOf(providerId) > -1) {
+                    throw new Error(`schedule identifier [${providerId}] is exists!`);
+                }
+                this.scheduleIds.push(providerId);
+                const moduleDefinition = await this.applicationContext.getAsync(providerId);
+                let targetHost = moduleDefinition.targetHost;
+                if (moduleDefinition.targetHost && _.isObject(moduleDefinition.targetHost)) {
+                    targetHost = moduleDefinition.targetHost[env];
+                }
+                let rule = lib_1.getScheduleRule(moduleDefinition.time);
+                const procIndex = !process.env.NODE_APP_INSTANCE ? 0 : parseInt(process.env.NODE_APP_INSTANCE);
+                //是否只允许在一个节点中启用
+                if (moduleDefinition.enable && (!targetHost || targetHost === hostname)
+                    && ((moduleDefinition.pm2OneInstance && procIndex === 0) || !moduleDefinition.pm2OneInstance)) {
+                    //启动定时任务
+                    schedule.scheduleJob(rule, moduleDefinition.resolve.bind(moduleDefinition));
+                    this.log.info(`${providerId} schedule task has successfully started`);
+                }
             }
         }
     }
@@ -213,6 +245,7 @@ class ZonetkApplication extends KOAApplication {
         await this.loader.refresh();
         await this.runRpcServer();
         await this.initRpcClient();
+        await this.loadSchedule();
         this.loadController();
     }
     prepareContext() {
@@ -231,6 +264,6 @@ __decorate([
 ], ZonetkApplication.prototype, "rpc", void 0);
 __decorate([
     decorators_1.logger()
-], ZonetkApplication.prototype, "logger", void 0);
+], ZonetkApplication.prototype, "log", void 0);
 exports.ZonetkApplication = ZonetkApplication;
 //# sourceMappingURL=app.js.map

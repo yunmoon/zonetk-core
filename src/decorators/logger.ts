@@ -5,7 +5,7 @@ import * as configFunc from "config";
 
 const appDir = process.cwd();
 const { combine, timestamp, label, printf } = winston.format;
-const procIndex = process.env.NODE_APP_INSTANCE === null ? 0 : process.env.NODE_APP_INSTANCE;
+const procIndex = !process.env.NODE_APP_INSTANCE ? 0 : process.env.NODE_APP_INSTANCE;
 const logConfig: DailyRotateFile.DailyRotateFileTransportOptions = {
   level: "info",
   filename: 'output-%DATE%.log',

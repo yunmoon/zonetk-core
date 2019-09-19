@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import schedule = require("node-schedule")
 export interface WebMiddleware {
   resolve(): (context: any, next: () => Promise<any>) => any;
 }
@@ -16,4 +17,13 @@ export abstract class Transformer {
   };
   abstract item(item: any): Promise<any>;
   abstract collection(item: any[]): Promise<any>;
+}
+export interface ScheduleInterface {
+  targetHost?: string | {
+    [key: string]: string;
+  };
+  enable: boolean;
+  pm2OneInstance: boolean;
+  time: schedule.RecurrenceRule;
+  resolve(): Promise<any>;
 }

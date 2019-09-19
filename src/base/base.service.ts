@@ -3,13 +3,14 @@ import { inject } from "injection";
 import { logger, config } from "../decorators";
 import { BaseContext } from "koa";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { Logger } from "winston";
 
 export class BaseService<T>{
   @inject()
   ctx: BaseContext;
 
   @logger()
-  log
+  log:Logger
 
   @config("db")
   dbConfig

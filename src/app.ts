@@ -10,13 +10,18 @@ import { getClassMetadata, getProviderId, listModule } from 'injection';
 import { ContainerLoader, MidwayContainer, MidwayRequestContainer } from 'midway-core';
 import { join } from 'path';
 import * as KOAApplication from 'koa';
-import { WebMiddleware } from './interface';
+import { WebMiddleware, ScheduleInterface } from './interface';
 import * as Router from 'koa-router';
 import { config, logger } from './decorators';
 import * as sofaRpc from 'sofa-rpc-node';
-import { RPC_KEY } from './constant';
-import { getAllMethods, generateKeyFunc, setRpcClient } from "./lib"
-
+import { RPC_KEY, SCHEDULE_KEY } from './constant';
+import { getAllMethods, generateKeyFunc, setRpcClient, getScheduleRule } from "./lib"
+import * as os from "os";
+import _ = require("lodash");
+import schedule = require("node-schedule");
+import { Logger } from 'winston';
+const hostname = os.hostname();
+const env = process.env.NODE_ENV || "development";
 function isTypeScriptEnvironment() {
   return !!require.extensions['.ts'];
 }
@@ -28,6 +33,7 @@ export class ZonetkApplication extends KOAApplication {
   loader: ContainerLoader;
   private controllerIds: string[] = [];
   private rpcServiceIds: string[] = [];
+  private scheduleIds: string[] = [];
   private rpcFuncIds: string[] = [];
   private prioritySortRouters: Array<{
     priority: number,
@@ -36,8 +42,9 @@ export class ZonetkApplication extends KOAApplication {
 
   @config()
   rpc
+
   @logger()
-  logger
+  log: Logger
 
   constructor(options: {
     baseDir?: string;
@@ -134,6 +141,32 @@ export class ZonetkApplication extends KOAApplication {
         //等待 consumer ready（从注册中心订阅服务列表...）
         await consumer.ready();
         setRpcClient(clientName, consumer);
+      }
+    }
+  }
+  async loadSchedule() {
+    const scheduleModules = listModule(SCHEDULE_KEY);
+    for (const module of scheduleModules) {
+      const providerId = getProviderId(module);
+      if (providerId) {
+        if (this.scheduleIds.indexOf(providerId) > -1) {
+          throw new Error(`schedule identifier [${providerId}] is exists!`);
+        }
+        this.scheduleIds.push(providerId);
+        const moduleDefinition: ScheduleInterface = await this.applicationContext.getAsync(providerId)
+        let targetHost = moduleDefinition.targetHost;
+        if (moduleDefinition.targetHost && _.isObject(moduleDefinition.targetHost)) {
+          targetHost = moduleDefinition.targetHost[env];
+        }
+        let rule = getScheduleRule(moduleDefinition.time);
+        const procIndex = !process.env.NODE_APP_INSTANCE ? 0 : parseInt(process.env.NODE_APP_INSTANCE);
+        //是否只允许在一个节点中启用
+        if (moduleDefinition.enable && (!targetHost || targetHost === hostname)
+          && ((moduleDefinition.pm2OneInstance && procIndex === 0) || !moduleDefinition.pm2OneInstance)) {
+          //启动定时任务
+          schedule.scheduleJob(rule, moduleDefinition.resolve.bind(moduleDefinition));
+          this.log.info(`${providerId} schedule task has successfully started`);
+        }
       }
     }
   }
@@ -245,6 +278,7 @@ export class ZonetkApplication extends KOAApplication {
     await this.loader.refresh();
     await this.runRpcServer();
     await this.initRpcClient();
+    await this.loadSchedule();
     this.loadController();
   }
 
