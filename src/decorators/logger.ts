@@ -28,6 +28,7 @@ const myFormat = printf((data) => {
 });
 const transport = new DailyRotateFile(logConfig);
 const winstonLogger = winston.createLogger({
+  level: logConfig.level,
   format: combine(
     label({ label: process.env.APP_NAME || "" }),
     timestamp(),
