@@ -39,7 +39,9 @@ class ZonetkApplication extends KOAApplication {
             isTsMode: true,
         });
         this.loader.initialize();
-        this.loader.loadDirectory();
+        this.loader.loadDirectory({
+            ignore: "script/**"
+        });
         this.prepareContext();
     }
     getBaseDir() {
@@ -92,7 +94,7 @@ class ZonetkApplication extends KOAApplication {
                     }
                     this.rpcFuncIds.push(`${providerId}.${func}`);
                 }
-                serviceFuncs = Object.assign({}, serviceFuncs, lib_1.generateKeyFunc(moduleServiceFuncs, moduleDefinition, providerId));
+                serviceFuncs = Object.assign(Object.assign({}, serviceFuncs), lib_1.generateKeyFunc(moduleServiceFuncs, moduleDefinition, providerId));
             }
         }
         return serviceFuncs;

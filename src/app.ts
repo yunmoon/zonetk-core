@@ -58,7 +58,9 @@ export class ZonetkApplication extends KOAApplication {
       isTsMode: true,
     });
     this.loader.initialize();
-    this.loader.loadDirectory();
+    this.loader.loadDirectory({
+      ignore: "script/**"
+    });
     this.prepareContext();
   }
 
