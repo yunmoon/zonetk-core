@@ -2,7 +2,7 @@ import { getManager, EntityManager } from "typeorm";
 import { logger, config } from "../decorators";
 import { inject } from "injection";
 import { Transformer } from "../interface";
-import { BaseContext } from "koa";
+import { Context } from "koa";
 import { Logger } from "winston";
 export class BaseController {
 
@@ -10,7 +10,7 @@ export class BaseController {
   log: Logger
 
   @inject()
-  ctx: BaseContext;
+  ctx: Context;
 
   @config()
   requestIdKey
