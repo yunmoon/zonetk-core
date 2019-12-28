@@ -1,10 +1,10 @@
 import { EntityManager } from "typeorm";
 import { Transformer } from "../interface";
-import { BaseContext } from "koa";
+import { Context } from "koa";
 import { Logger } from "winston";
 export declare class BaseController {
     log: Logger;
-    ctx: BaseContext;
+    ctx: Context;
     requestIdKey: any;
     getLogger(): Logger;
     transaction(doFunc: (tm: EntityManager) => any): Promise<unknown>;

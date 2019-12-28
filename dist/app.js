@@ -136,12 +136,12 @@ class ZonetkApplication extends KOAApplication {
                 if (moduleDefinition.targetHost && _.isObject(moduleDefinition.targetHost)) {
                     targetHost = moduleDefinition.targetHost[env];
                 }
-                let rule = lib_1.getScheduleRule(moduleDefinition.time);
                 const procIndex = !process.env.NODE_APP_INSTANCE ? 0 : parseInt(process.env.NODE_APP_INSTANCE);
                 //是否只允许在一个节点中启用
                 if (moduleDefinition.enable && (!targetHost || targetHost === hostname)
                     && ((moduleDefinition.pm2OneInstance && procIndex === 0) || !moduleDefinition.pm2OneInstance)) {
                     //启动定时任务
+                    let rule = lib_1.getScheduleRule(moduleDefinition.time);
                     schedule.scheduleJob(rule, moduleDefinition.resolve.bind(moduleDefinition));
                     this.log.info(`${providerId} schedule task has successfully started`);
                 }
