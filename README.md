@@ -101,6 +101,152 @@ TypeORM 的一些特性:
 
 详细使用请[参考文档](https://github.com/typeorm/typeorm/tree/master/docs/zh_CN)
 ### 2.路由和控制器
+zonetk 使用 koa-router 作为路由的承载者，同时在 ts 的语法上做了一些简化，我们将路由和控制器放在了一起，使用装饰器来标注路由。
+
+由于 zonetk 采用了 IoC 自扫描机制，使得在一定程度上弱化了目录结构约定，通过装饰器的机制，可以非常方便的进行解耦，按业务逻辑拆分等。
+
+现在可以在任意目录下创建 controller，不再限定 app/controller 目录，同理，其他装饰器也不限定。
+
+现在可以做到比如 src/web/controller 下放 controller，也可以按业务维度分，比如 user 目录，包含跟用户相关所有的 controller/service/dao 等，对微服务或者 serverless 比较友好。
+#### 路由装饰器
+我们的控制器目录为 src/controller ，我们在其中编写 *.ts 文件。例如下面的 userController.controller.ts ，我们提供了一个获取用户的接口。
+```js
+import { provide, controller, inject, Http } from 'zonetk-core';
+
+@provide()
+@controller('/user')
+export class UserController {
+
+  @inject('userService')
+  service: IUserService;
+
+  @Http.get('/:id')
+  async getUser(ctx): Promise<void> {
+    const id: number = ctx.params.id;
+    const user: IUserResult = await this.service.getUser({id});
+    ctx.body = {success: true, message: 'OK', data: user};
+  }
+}
+```
+我们创建了 @controller 装饰器用来定义这个类为 Controller，同时，提供了方法装饰器用于标注请求的类型。
+@controller 的参数为字符串 pattern，我们会将这个值传入 router.prefix(prefix) 的参数中。  
+zontk 针对 web 请求，提供了和 koa-router 对应的方法装饰器，列表如下。
+- @Http.get
+- @Http.post
+- @Http.del
+- @Http.put
+- @Http.patch
+- @Http.options
+- @Http.head
+- @Http.all  
+
+这几个装饰器用于修饰不同的异步方法，同时对应到了 koa-router 的相应的方法。和原有提供的控制器一样，每个控制器都为异步方法，参数为 koa 上下文。
+#### 路由优先级
+在单页应用下，经常会出现 /* 这种路由，在原本的路由文件中，我们可以通过调整代码的顺序，来使的路由的匹配顺序发生变化。而由于使用了装饰器的关系，在新的体系无法控制文件扫描和加载顺序，这就使得路由匹配的顺序不可控。
+
+zonetk 提供了 @priority(priority: number) 装饰器，用于修饰 class，定义路由的优先级，默认的路由优先级为 0，可以设置负数让优先级降低。
+```js
+@provide()
+@priority(-1)
+@controller('/')
+export class HomeController {
+
+  @Http.get('/hello')
+  async index(ctx) {
+    ctx.body = 'hello';
+  }
+
+  @Http.get('/*')
+  async all(ctx) {
+    ctx.body = 'world';
+  }
+}
+```
+#### 路由中间件
+现在可以提供一个 middleware（任意目录），比如 src/middleware/api.ts。
+```ts
+import { Middleware, WebMiddleware, provide,config,BaseMiddleware } from 'zonetk-core';
+
+@provide()
+export class ApiMiddleware extends BaseMiddleware implements WebMiddleware {
+
+  @config('hello')
+  helloConfig;
+
+  resolve(): Middleware {
+    return async (ctx, next) => {
+      ctx.api = '222' + this.helloConfig.b;
+      await next();
+    };
+  }
+
+}
+```
+由于是 class，依旧可以使用 inject/plugin/config 等装饰器修饰。
+```ts
+@provide()
+@controller('/', {middleware: ['homeMiddleware']})
+export class My {
+
+  @inject()
+  ctx;
+
+  @Http.get('/', {middleware: ['apiMiddleware']})
+  async index() {
+    this.ctx.body = this.ctx.home + this.ctx.api;
+  }
+}
+```
+在 @controller 和 @get/post 等路由装饰器上都提供了 middleware 参数。  
+这里的 middleware 参数是一个数组，可以传多个字符串或者 koa middleware，如果是字符串，会从 IoC 容器中获取对应的 WebMiddleware 接口实例的 resolve 方法的结果。
+由于中间件在生命周期的特殊性，会在应用请求前就被加载（绑定）到路由上，所以无法和上下文关联。
+
+中间件类固定为单例（Singleton），所有注入的内容都为单例，包括但不限于 @config/@logger/@plugin 等。
+
+这意味着你可以注入一个 service，但是这个 service 中无法注入 ctx 属性。
+
+这个时候，你必须在 resolve 方法中，通过调用 ctx.requestContext.getAsync('xxx') 的方式来创建请求作用域实例，和上下文绑定。
+```ts
+@provide()
+export class ApiMiddleware extends BaseMiddleware implements WebMiddleware {
+
+  @inject()
+  myService;  // 由于中间件实例属于单例，这个实例即使注入也无法获取到 ctx
+
+  resolve(): Middleware {
+    return async (ctx, next) => {
+      // 必须通过从请求作用域中获取对象的方式，来绑定上下文
+      ctx.service = await ctx.requestContext.getAsync('myService');
+      await next();
+    };
+  }
+
+}
+```
+
+#### 一个方法挂载多个路由
+```ts
+@provide()
+@controller('/', {middleware: ['homeMiddleware']})
+export class My {
+
+  @inject()
+  ctx;
+
+  @Http.get('/', {middleware: ['apiMiddleware']})
+  @Http.post('/api/data')
+  async index() {
+    this.ctx.body = this.ctx.home + (this.ctx.api || '');
+  }
+}
+```
+这样请求进来， post 和 get 拿到的结果是不一样的（get请求挂载了额外的中间件）。
+
 ### 3.框架增强注入
+#### 注入插件
+#### 注入配置
+#### 注册定时任务
+#### 注册rpc服务方法
+#### 注入日志对象
 ### 4.框架扩展方法
 ## 部署
