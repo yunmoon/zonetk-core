@@ -107,7 +107,12 @@ zonetk 使用 koa-router 作为路由的承载者，同时在 ts 的语法上做
 
 现在可以在任意目录下创建 controller，不再限定 app/controller 目录，同理，其他装饰器也不限定。
 
-现在可以做到比如 src/web/controller 下放 controller，也可以按业务维度分，比如 user 目录，包含跟用户相关所有的 controller/service/dao 等，对微服务或者 serverless 比较友好。
+现在可以做到比如 src/web/controller 下放 controller，也可以按业务维度分，比如 user 目录，包含跟用户相关所有的 controller/service/dao 等，对微服务或者 serverless 比较友好。  
+
+快速创建控制器我们可以使用脚手架工具:
+```bash
+zonetk create:controller --name user
+```
 #### 路由装饰器
 我们的控制器目录为 src/controller ，我们在其中编写 *.ts 文件。例如下面的 userController.controller.ts ，我们提供了一个获取用户的接口。
 ```js
@@ -242,8 +247,58 @@ export class My {
 ```
 这样请求进来， post 和 get 拿到的结果是不一样的（get请求挂载了额外的中间件）。
 
+快速创建中间件我们可以使用脚手架工具:
+```bash
+zonetk create:middleware --name api
+```
+
 ### 3.框架增强注入
 #### 注入插件
+定义一个插件
+```ts
+import { BasePlugin, ZonetkPlugin, config } from "zonetk-core";
+import * as IoRedis from "ioredis";
+import * as _ from "lodash";
+
+export default class RedisPlugin extends BasePlugin implements ZonetkPlugin<IoRedis.Redis | IoRedis.Cluster>{
+
+  @config("redis")
+  redisConfig
+
+  private redis: IoRedis.Redis | IoRedis.Cluster;
+  constructor() {
+    super()
+    if (!this.redisConfig) {
+      throw new Error("redis has no config")
+    }
+    this.redisConfig = this.redisConfig.split(",")
+    if (this.redisConfig.length > 1) {
+      this.redis = new IoRedis.Cluster(this.redisConfig)
+    } else {
+      this.redis = new IoRedis(this.redisConfig[0]);
+    }
+  }
+  resolve() {
+    return this.redis;
+  }
+}
+```
+通过装饰器@plugin在控制器中注入插件并使用
+```ts
+import { provide, inject, controller, Http, BaseController, plugin } from "zonetk-core"
+
+@provide()
+export default class UserController extends BaseController {
+  @plugin("redis")
+  redis
+
+  @Http.get("/userInfo")
+  async getUserInfo(){
+    const {userId} = this.ctx.query
+    const cacheUser = await this.redis.get(`userDetail:${userId}`)
+  }
+}
+```
 #### 注入配置
 #### 注册定时任务
 #### 注册rpc服务方法

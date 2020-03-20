@@ -10,7 +10,7 @@ export class BaseService<T>{
   ctx: BaseContext;
 
   @logger()
-  log:Logger
+  log: Logger
 
   @config("db")
   dbConfig
@@ -50,7 +50,7 @@ export class BaseService<T>{
   findAndCount(options?: FindManyOptions<T>, tm?: EntityManager) {
     return this.getRepository(tm).findAndCount(options);
   }
-  delete(options, tm?: EntityManager) {
+  delete(options: string | string[] | number | number[] | Date | Date[] | FindConditions<T>, tm?: EntityManager) {
     return this.getRepository(tm).delete(options)
   }
   count(options: FindManyOptions, tm?: EntityManager) {
