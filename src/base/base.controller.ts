@@ -21,7 +21,7 @@ export class BaseController {
     return this.log.child({ requestId });
   }
   transaction(doFunc: (tm: EntityManager) => any) {
-    return new Promise((resolve, reject) => {
+    return new Promise<any> ((resolve, reject) => {
       getManager().transaction(async tm => {
         const result = await doFunc(tm);
         resolve(result);

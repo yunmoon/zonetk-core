@@ -300,6 +300,35 @@ export default class UserController extends BaseController {
 }
 ```
 #### 注入配置
+使用@config装饰器的方式读取配置文件到类属性上。下面例子是读取redis的连接配置
+```ts
+import { BasePlugin, ZonetkPlugin, config } from "zonetk-core";
+import * as IoRedis from "ioredis";
+import * as _ from "lodash";
+
+export default class RedisPlugin extends BasePlugin implements ZonetkPlugin<IoRedis.Redis | IoRedis.Cluster>{
+
+  @config("redis")
+  redisConfig
+
+  private redis: IoRedis.Redis | IoRedis.Cluster;
+  constructor() {
+    super()
+    if (!this.redisConfig) {
+      throw new Error("redis has no config")
+    }
+    this.redisConfig = this.redisConfig.split(",")
+    if (this.redisConfig.length > 1) {
+      this.redis = new IoRedis.Cluster(this.redisConfig)
+    } else {
+      this.redis = new IoRedis(this.redisConfig[0]);
+    }
+  }
+  resolve() {
+    return this.redis;
+  }
+}
+```
 #### 注册定时任务
 #### 注册rpc服务方法
 #### 注入日志对象

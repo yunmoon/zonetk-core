@@ -53,7 +53,7 @@ export class BaseService<T>{
   delete(options: string | string[] | number | number[] | Date | Date[] | FindConditions<T>, tm?: EntityManager) {
     return this.getRepository(tm).delete(options)
   }
-  count(options: FindManyOptions, tm?: EntityManager) {
+  count(options?: FindManyOptions<T>, tm?: EntityManager) {
     return this.getRepository(tm).count(options)
   }
   save(data, tm?: EntityManager) {
