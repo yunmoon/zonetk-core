@@ -7,6 +7,6 @@ export declare class BaseController {
     ctx: Context;
     requestIdKey: any;
     getLogger(): Logger;
-    transaction(doFunc: (tm: EntityManager) => any): Promise<unknown>;
+    transaction(doFunc: (tm: EntityManager) => any): Promise<any>;
     transform(item: any | any[], transformerObj: Transformer): Promise<any>;
 }

@@ -16,8 +16,8 @@ export declare class BaseService<T> {
     findById(id?: string | number, tm?: EntityManager): Promise<T>;
     findAll(options?: FindManyOptions<T>, tm?: EntityManager): Promise<T[]>;
     findAndCount(options?: FindManyOptions<T>, tm?: EntityManager): Promise<[T[], number]>;
-    delete(options: any, tm?: EntityManager): Promise<import("typeorm").DeleteResult>;
-    count(options: FindManyOptions, tm?: EntityManager): Promise<number>;
+    delete(options: string | string[] | number | number[] | Date | Date[] | FindConditions<T>, tm?: EntityManager): Promise<import("typeorm").DeleteResult>;
+    count(options?: FindManyOptions<T>, tm?: EntityManager): Promise<number>;
     save(data: any, tm?: EntityManager): Promise<any>;
     update(where: FindConditions<T>, data: QueryDeepPartialEntity<T>, tm?: EntityManager): Promise<import("typeorm").UpdateResult>;
 }
