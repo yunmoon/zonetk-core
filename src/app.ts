@@ -13,9 +13,8 @@ import * as KOAApplication from 'koa';
 import { WebMiddleware, ScheduleInterface } from './interface';
 import * as Router from 'koa-router';
 import { config, logger } from './decorators';
-import * as sofaRpc from 'sofa-rpc-node';
 import { RPC_KEY, SCHEDULE_KEY } from './constant';
-import { getAllMethods, generateKeyFunc, setRpcClient, getScheduleRule } from "./lib"
+import { getAllMethods, generateKeyFunc, getScheduleRule } from "./lib"
 import * as os from "os";
 import _ = require("lodash");
 import schedule = require("node-schedule");
@@ -72,31 +71,6 @@ export class ZonetkApplication extends KOAApplication {
     }
   }
 
-  async runRpcServer() {
-    if (this.rpc && this.rpc.server) {
-      const zookeeperAddress = (this.rpc.zookeeper && this.rpc.zookeeper.address) || "127.0.0.1:2181"
-      const registry = new sofaRpc.registry.ZookeeperRegistry({
-        logger: console,
-        address: zookeeperAddress, // 需要本地启动一个 zkServer
-      });
-      const rpcServer = new sofaRpc.server.RpcServer({
-        logger: console,
-        registry, // 传入注册中心客户端
-        port: this.rpc.server.port || 12200,
-      });
-      if (!this.rpc.server.service) {
-        throw new Error("config rpc.server.service is required");
-      }
-      const serviceFuncs = await this.loadRpcServiceFunc();
-      rpcServer.addService({
-        interfaceName: this.rpc.server.service,
-      }, serviceFuncs);
-      // 4. 启动 Server 并发布服务
-      await rpcServer.start();
-      await rpcServer.publish();
-    }
-  }
-
   async loadRpcServiceFunc() {
     const rpcServiceModules = listModule(RPC_KEY);
     let serviceFuncs = {};
@@ -122,29 +96,6 @@ export class ZonetkApplication extends KOAApplication {
       }
     }
     return serviceFuncs
-  }
-  async initRpcClient() {
-    if (this.rpc && this.rpc.client) {
-      const zookeeperAddress = (this.rpc.zookeeper && this.rpc.zookeeper.address) || "127.0.0.1:2181"
-      const registry = new sofaRpc.registry.ZookeeperRegistry({
-        logger: console,
-        address: zookeeperAddress,
-      });
-      const client = new sofaRpc.client.RpcClient({
-        logger: console,
-        registry,
-      });
-      const clientNames = Object.keys(this.rpc.client)
-      for (let index = 0; index < clientNames.length; index++) {
-        const clientName = clientNames[index];
-        const consumer = client.createConsumer({
-          interfaceName: this.rpc.client[clientName],
-        });
-        //等待 consumer ready（从注册中心订阅服务列表...）
-        await consumer.ready();
-        setRpcClient(clientName, consumer);
-      }
-    }
   }
   async loadSchedule() {
     const scheduleModules = listModule(SCHEDULE_KEY);
@@ -279,8 +230,6 @@ export class ZonetkApplication extends KOAApplication {
 
   async ready() {
     await this.loader.refresh();
-    await this.runRpcServer();
-    await this.initRpcClient();
     await this.loadSchedule();
     this.loadController();
   }

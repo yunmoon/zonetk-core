@@ -9,6 +9,4 @@ import { EntityManager } from "typeorm";
 export declare function getTransaction(doFunc: (tm: EntityManager) => any): Promise<unknown>;
 export declare function getAllMethods(obj: any): any[];
 export declare function generateKeyFunc(methods: string[], obj: any, providerId?: string): any;
-export declare function setRpcClient(client: string, obj: any): void;
-export declare function getRpcClient(client: string): any;
 export declare function getScheduleRule(option: any): any;

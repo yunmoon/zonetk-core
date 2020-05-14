@@ -16,9 +16,7 @@ export declare class ZonetkApplication extends KOAApplication {
         baseDir?: string;
     });
     getBaseDir(): string;
-    runRpcServer(): Promise<void>;
     loadRpcServiceFunc(): Promise<{}>;
-    initRpcClient(): Promise<void>;
     loadSchedule(): Promise<void>;
     loadController(): Promise<void>;
     protected preRegisterRouter(target: any, controllerId: any): Promise<void>;

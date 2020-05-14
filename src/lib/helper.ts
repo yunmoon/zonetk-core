@@ -10,7 +10,6 @@ function _interval(intr, end = 60) {
   }
   return arr;
 }
-const rpcClient = {};
 /**
  *
  * 获取数据库事务
@@ -59,14 +58,6 @@ export function generateKeyFunc(methods: string[], obj, providerId?: string): an
     methodsObj[methodKey] = obj[item].bind(obj);
   })
   return methodsObj;
-}
-
-export function setRpcClient(client: string, obj) {
-  rpcClient[client] = obj;
-}
-
-export function getRpcClient(client: string) {
-  return rpcClient[client];
 }
 
 export function getScheduleRule(option) {

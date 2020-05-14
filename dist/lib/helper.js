@@ -10,7 +10,6 @@ function _interval(intr, end = 60) {
     }
     return arr;
 }
-const rpcClient = {};
 /**
  *
  * 获取数据库事务
@@ -61,14 +60,6 @@ function generateKeyFunc(methods, obj, providerId) {
     return methodsObj;
 }
 exports.generateKeyFunc = generateKeyFunc;
-function setRpcClient(client, obj) {
-    rpcClient[client] = obj;
-}
-exports.setRpcClient = setRpcClient;
-function getRpcClient(client) {
-    return rpcClient[client];
-}
-exports.getRpcClient = getRpcClient;
 function getScheduleRule(option) {
     let rule = new schedule.RecurrenceRule();
     if (option.second !== undefined && option.second !== null) {
