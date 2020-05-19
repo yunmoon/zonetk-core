@@ -5,6 +5,7 @@ import { Logger } from "winston";
 export declare class BaseService<T> {
     private entity;
     ctx: BaseContext;
+    getRpcCall: Function;
     log: Logger;
     dbConfig: any;
     repository: Repository<T>;

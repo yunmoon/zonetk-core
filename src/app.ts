@@ -232,6 +232,14 @@ export class ZonetkApplication extends KOAApplication {
     await this.loader.refresh();
     await this.loadSchedule();
     this.loadController();
+    this.applicationContext.registerObject("getRpcCall", () => {
+      try {
+        return this.applicationContext.get("rpcRequestCall")
+      } catch (error) {
+        return false
+      }
+
+    });
   }
 
   private prepareContext() {
