@@ -19,3 +19,9 @@ export interface ScheduleInterface {
     time: schedule.RecurrenceRule;
     resolve(): Promise<any>;
 }
+export interface GrpcFunction {
+    (call: any, callback: CallbackFunc, next?: Function): void;
+}
+export interface CallbackFunc {
+    (error: Error, data: any): void;
+}

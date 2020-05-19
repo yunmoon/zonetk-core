@@ -7,4 +7,5 @@ __export(require("./base.controller"));
 __export(require("./base.service"));
 __export(require("./base.middleware"));
 __export(require("./base.plugin"));
+__export(require("./base.rpcService"));
 //# sourceMappingURL=index.js.map

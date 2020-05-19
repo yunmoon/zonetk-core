@@ -9,4 +9,5 @@ __export(require("./midwayjs-decorator"));
 __export(require("./plugin"));
 __export(require("./rpc"));
 __export(require("./schedule"));
+__export(require("./rpcMiddleware"));
 //# sourceMappingURL=index.js.map
