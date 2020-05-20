@@ -21,7 +21,7 @@ class BaseService {
             requestId = this.ctx.get(requestIdKey) || "";
         }
         if (!this.ctx && !requestId) {
-            const rpcCall = this.getRpcCall();
+            const rpcCall = this.rpcRequestCall;
             if (rpcCall && rpcCall.request.headers) {
                 requestId = rpcCall.request.headers[this.requestIdKey || "requestId"] || "";
             }
@@ -65,7 +65,7 @@ __decorate([
 ], BaseService.prototype, "ctx", void 0);
 __decorate([
     injection_1.inject()
-], BaseService.prototype, "getRpcCall", void 0);
+], BaseService.prototype, "rpcRequestCall", void 0);
 __decorate([
     decorators_1.logger()
 ], BaseService.prototype, "log", void 0);

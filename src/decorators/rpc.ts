@@ -3,8 +3,8 @@ import { RPC_KEY } from '../constant'
 import { isFunction } from "util";
 import { GrpcFunction } from "../interface";
 
-export function rpcService(args: rpcServiceOptions): ClassDecorator {
-  const middlewares = args.middlewares || []
+export function rpcService(args?: rpcServiceOptions): ClassDecorator {
+  const middlewares = (args && args.middlewares) || []
   if (!Array.isArray(middlewares)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middlewares) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')

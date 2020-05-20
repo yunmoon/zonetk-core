@@ -72,7 +72,7 @@ export class ZonetkApplication extends KOAApplication {
   }
 
   async loadRpcServiceFunc() {
-    const rpcServiceModules = listModule(RPC_KEY);
+    const rpcServiceModules: any[] = listModule(RPC_KEY);
     let serviceFuncs = {};
     for (const module of rpcServiceModules) {
       const providerId = getProviderId(module);
@@ -81,8 +81,7 @@ export class ZonetkApplication extends KOAApplication {
           throw new Error(`rpcService identifier [${providerId}] is exists!`);
         }
         this.rpcServiceIds.push(providerId);
-        const moduleDefinition = await this.applicationContext.getAsync(providerId)
-        const moduleServiceFuncs = getAllMethods(moduleDefinition);
+        const moduleServiceFuncs = getAllMethods(module.prototype);
         for (const func of moduleServiceFuncs) {
           if (this.rpcFuncIds.includes(`${providerId}.${func}`)) {
             throw new Error(`rpcService func [${providerId}.${func}] is exists!`);
@@ -91,7 +90,7 @@ export class ZonetkApplication extends KOAApplication {
         }
         serviceFuncs = {
           ...serviceFuncs,
-          ...generateKeyFunc(moduleServiceFuncs, moduleDefinition, providerId)
+          ...generateKeyFunc(moduleServiceFuncs, providerId)
         }
       }
     }
@@ -232,19 +231,12 @@ export class ZonetkApplication extends KOAApplication {
     await this.loader.refresh();
     await this.loadSchedule();
     this.loadController();
-    this.applicationContext.registerObject("getRpcCall", () => {
-      try {
-        return this.applicationContext.get("rpcRequestCall")
-      } catch (error) {
-        return false
-      }
-
-    });
   }
 
   private prepareContext() {
     this.use(async (ctx, next) => {
       ctx.requestContext = new MidwayRequestContainer(this.applicationContext, ctx);
+      ctx.requestContext.registerObject("rpcRequestCall", {})
       this.applicationContext.registerObject("requestContext", ctx.requestContext);
       await next();
     });

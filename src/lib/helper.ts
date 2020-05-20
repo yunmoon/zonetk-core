@@ -48,14 +48,14 @@ export function getAllMethods(obj) {
   )
   return props
 }
-export function generateKeyFunc(methods: string[], obj, providerId?: string): any {
+export function generateKeyFunc(methods: string[], providerId?: string): any {
   const methodsObj = {}
   methods.forEach(item => {
     let methodKey = item;
     if (providerId) {
       methodKey = `${providerId}.${item}`;
     }
-    methodsObj[methodKey] = obj[item].bind(obj);
+    methodsObj[methodKey] = item;
   })
   return methodsObj;
 }

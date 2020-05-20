@@ -10,7 +10,7 @@ export class BaseService<T>{
   ctx: BaseContext;
 
   @inject()
-  getRpcCall: Function
+  rpcRequestCall
 
   @logger()
   log: Logger
@@ -33,7 +33,7 @@ export class BaseService<T>{
       requestId = this.ctx.get(requestIdKey) || ""
     }
     if (!this.ctx && !requestId) {
-      const rpcCall = this.getRpcCall()
+      const rpcCall = this.rpcRequestCall
       if (rpcCall && rpcCall.request.headers) {
         requestId = rpcCall.request.headers[this.requestIdKey || "requestId"] || ""
       }

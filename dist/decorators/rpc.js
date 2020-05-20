@@ -4,7 +4,7 @@ const injection_1 = require("injection");
 const constant_1 = require("../constant");
 const util_1 = require("util");
 function rpcService(args) {
-    const middlewares = args.middlewares || [];
+    const middlewares = (args && args.middlewares) || [];
     if (!Array.isArray(middlewares))
         throw new TypeError('Middleware stack must be an array!');
     for (const fn of middlewares) {

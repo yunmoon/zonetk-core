@@ -9,14 +9,14 @@ export class BaseRpcService {
   log: Logger
 
   @inject()
-  getRpcCall: Function
+  rpcRequestCall
 
   @config()
   requestIdKey
 
   getLogger() {
     let requestId = "";
-    const rpcCall = this.getRpcCall()
+    const rpcCall = this.rpcRequestCall
     if (rpcCall && rpcCall.request.headers) {
       requestId = rpcCall.request.headers[this.requestIdKey || "requestId"] || ""
     }
