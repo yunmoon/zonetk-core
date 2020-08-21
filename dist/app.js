@@ -21,7 +21,7 @@ const schedule = require("node-schedule");
 const hostname = os.hostname();
 const env = process.env.NODE_ENV || "development";
 function isTypeScriptEnvironment() {
-    return !!require.extensions['.ts'];
+    return !!require.extensions[".ts"];
 }
 class ZonetkApplication extends KOAApplication {
     constructor(options = {}) {
@@ -39,16 +39,16 @@ class ZonetkApplication extends KOAApplication {
         });
         this.loader.initialize();
         this.loader.loadDirectory({
-            ignore: "script/**"
+            ignore: "script/**",
         });
         this.prepareContext();
     }
     getBaseDir() {
         if (isTypeScriptEnvironment()) {
-            return path_1.join(this.appDir, 'src');
+            return path_1.join(this.appDir, "src");
         }
         else {
-            return path_1.join(this.appDir, 'dist');
+            return path_1.join(this.appDir, "dist");
         }
     }
     async loadRpcServiceFunc() {
@@ -84,13 +84,18 @@ class ZonetkApplication extends KOAApplication {
                 this.scheduleIds.push(providerId);
                 const moduleDefinition = await this.applicationContext.getAsync(providerId);
                 let targetHost = moduleDefinition.targetHost;
-                if (moduleDefinition.targetHost && _.isObject(moduleDefinition.targetHost)) {
+                if (moduleDefinition.targetHost &&
+                    _.isObject(moduleDefinition.targetHost)) {
                     targetHost = moduleDefinition.targetHost[env];
                 }
-                const procIndex = !process.env.NODE_APP_INSTANCE ? 0 : parseInt(process.env.NODE_APP_INSTANCE);
+                const procIndex = !process.env.NODE_APP_INSTANCE
+                    ? 0
+                    : parseInt(process.env.NODE_APP_INSTANCE);
                 //是否只允许在一个节点中启用
-                if (moduleDefinition.enable && (!targetHost || targetHost === hostname)
-                    && ((moduleDefinition.pm2OneInstance && procIndex === 0) || !moduleDefinition.pm2OneInstance)) {
+                if (moduleDefinition.enable &&
+                    (!targetHost || targetHost === hostname) &&
+                    ((moduleDefinition.pm2OneInstance && procIndex === 0) ||
+                        !moduleDefinition.pm2OneInstance)) {
                     //启动定时任务
                     let rule = lib_1.getScheduleRule(moduleDefinition.time);
                     schedule.scheduleJob(rule, moduleDefinition.resolve.bind(moduleDefinition));
@@ -137,7 +142,8 @@ class ZonetkApplication extends KOAApplication {
             });
             // implement @get @post
             const webRouterInfo = injection_1.getClassMetadata(decorator_1.WEB_ROUTER_KEY, target);
-            if (webRouterInfo && typeof webRouterInfo[Symbol.iterator] === 'function') {
+            if (webRouterInfo &&
+                typeof webRouterInfo[Symbol.iterator] === "function") {
                 for (const webRouter of webRouterInfo) {
                     // get middleware
                     const middlewares = webRouter.middleware;
@@ -149,7 +155,7 @@ class ZonetkApplication extends KOAApplication {
                         webRouter.routerName,
                         webRouter.path,
                         ...methodMiddlwares,
-                        this.generateController(`${controllerId}.${webRouter.method}`)
+                        this.generateController(`${controllerId}.${webRouter.method}`),
                     ].concat(methodMiddlwares);
                     // apply controller from request context
                     newRouter[webRouter.requestMethod].apply(newRouter, routerArgs);
@@ -168,7 +174,7 @@ class ZonetkApplication extends KOAApplication {
     async handlerWebMiddleware(middlewares, handlerCallback) {
         if (middlewares && middlewares.length) {
             for (const middleware of middlewares) {
-                if (typeof middleware === 'function') {
+                if (typeof middleware === "function") {
                     // web function middleware
                     handlerCallback(middleware);
                 }
@@ -186,7 +192,7 @@ class ZonetkApplication extends KOAApplication {
      * @param controllerMapping like xxxController.index
      */
     generateController(controllerMapping) {
-        const mappingSplit = controllerMapping.split('.');
+        const mappingSplit = controllerMapping.split(".");
         const controllerId = mappingSplit[0];
         const methodName = mappingSplit[1];
         return async (ctx, next) => {
@@ -200,9 +206,9 @@ class ZonetkApplication extends KOAApplication {
         this.loadController();
     }
     prepareContext() {
+        this.applicationContext.registerObject("rpcRequestCall", {});
         this.use(async (ctx, next) => {
             ctx.requestContext = new midway_core_1.MidwayRequestContainer(this.applicationContext, ctx);
-            ctx.requestContext.registerObject("rpcRequestCall", {});
             this.applicationContext.registerObject("requestContext", ctx.requestContext);
             await next();
         });

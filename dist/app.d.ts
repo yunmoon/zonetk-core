@@ -1,6 +1,6 @@
-import { ContainerLoader, MidwayContainer } from 'midway-core';
-import * as KOAApplication from 'koa';
-import { Logger } from 'winston';
+import { ContainerLoader, MidwayContainer } from "midway-core";
+import * as KOAApplication from "koa";
+import { Logger } from "winston";
 export declare class ZonetkApplication extends KOAApplication {
     appDir: any;
     baseDir: any;
