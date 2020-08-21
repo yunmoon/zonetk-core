@@ -45,7 +45,6 @@ export class BaseService<T>{
     if (tm) {
       repository = tm.getRepository(this.entity);
     }
-    repository.queryRunner.data.logger = this.getLogger();
     return repository;
   }
   findOne(options?: FindOneOptions<T>, tm?: EntityManager) {

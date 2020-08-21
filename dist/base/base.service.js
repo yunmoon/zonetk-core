@@ -33,7 +33,6 @@ class BaseService {
         if (tm) {
             repository = tm.getRepository(this.entity);
         }
-        repository.queryRunner.data.logger = this.getLogger();
         return repository;
     }
     findOne(options, tm) {
