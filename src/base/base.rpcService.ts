@@ -4,35 +4,41 @@ import { Transformer } from "../interface";
 import { inject } from "injection";
 import { Logger } from "winston";
 export class BaseRpcService {
-
   @logger()
-  log: Logger
+  log: Logger;
 
   @inject()
-  rpcRequestCall
+  rpcRequestCall;
 
   @config()
-  requestIdKey
+  requestIdKey;
 
   getLogger() {
     let requestId = "";
-    const rpcCall = this.rpcRequestCall
+    const rpcCall = this.rpcRequestCall;
     if (rpcCall && rpcCall.request.headers) {
-      requestId = rpcCall.request.headers[this.requestIdKey || "requestId"] || ""
+      requestId =
+        rpcCall.request.headers[this.requestIdKey || "requestId"] || "";
     }
     return this.log.child({ requestId: requestId });
   }
   transaction(doFunc: (tm: EntityManager) => any) {
     return new Promise<any>((resolve, reject) => {
-      getManager().transaction(async tm => {
-        const result = await doFunc(tm);
-        resolve(result);
-      }).catch(error => {
-        reject(error);
-      })
-    })
+      getManager()
+        .transaction(async (tm) => {
+          const result = await doFunc(tm);
+          resolve(result);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   }
-  async transform(item: any | any[], transformerObj: Transformer) {
-    return await transformerObj.resolve(item)
+  async transform(
+    item: any | any[],
+    transformerObj: Transformer,
+    includes?: string[]
+  ) {
+    return await transformerObj.resolve(item, includes);
   }
 }

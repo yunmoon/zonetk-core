@@ -30,7 +30,7 @@ export class BaseController {
       })
     })
   }
-  async transform(item: any | any[], transformerObj: Transformer) {
-    return await transformerObj.resolve(item)
+  async transform(item: any | any[], transformerObj: Transformer, includes?: string[]) {
+    return await transformerObj.resolve(item, includes)
   }
 }

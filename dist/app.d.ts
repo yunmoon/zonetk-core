@@ -29,4 +29,5 @@ export declare class ZonetkApplication extends KOAApplication {
     ready(): Promise<void>;
     private prepareContext;
     readonly applicationContext: MidwayContainer;
+    getHttpAdapter(): any;
 }

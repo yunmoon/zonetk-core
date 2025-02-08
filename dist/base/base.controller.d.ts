@@ -8,5 +8,5 @@ export declare class BaseController {
     requestIdKey: any;
     getLogger(): Logger;
     transaction(doFunc: (tm: EntityManager) => any): Promise<any>;
-    transform(item: any | any[], transformerObj: Transformer): Promise<any>;
+    transform(item: any | any[], transformerObj: Transformer, includes?: string[]): Promise<any>;
 }

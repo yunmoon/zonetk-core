@@ -294,4 +294,15 @@ export class ZonetkApplication extends KOAApplication {
   get applicationContext(): MidwayContainer {
     return this.loader.getApplicationContext();
   }
+
+  getHttpAdapter() {
+    const newRouter = new Router(
+      {
+        sensitive: true,
+      },
+      this
+    );
+    this.use(newRouter.routes());
+    return newRouter;
+  }
 }

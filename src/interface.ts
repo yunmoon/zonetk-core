@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import schedule = require("node-schedule")
+import schedule = require("node-schedule");
 export interface WebMiddleware {
   resolve(): (context: any, next: () => Promise<any>) => any;
 }
@@ -9,19 +9,21 @@ export interface ZonetkPlugin<T> {
 }
 
 export abstract class Transformer {
-  resolve(item: any | any[]): Promise<any> {
+  resolve(item: any | any[], includes?: string[]): Promise<any> {
     if (_.isArray(item)) {
-      return this.collection(item);
+      return this.collection(item, includes);
     }
-    return this.item(item);
-  };
-  abstract item(item: any): Promise<any>;
-  abstract collection(item: any[]): Promise<any>;
+    return this.item(item, includes);
+  }
+  abstract item(item: any, includes?: string[]): Promise<any>;
+  abstract collection(item: any[], includes?: string[]): Promise<any>;
 }
 export interface ScheduleInterface {
-  targetHost?: string | {
-    [key: string]: string;
-  };
+  targetHost?:
+    | string
+    | {
+        [key: string]: string;
+      };
   enable: boolean;
   pm2OneInstance: boolean;
   time: schedule.RecurrenceRule;
@@ -29,9 +31,9 @@ export interface ScheduleInterface {
 }
 
 export interface GrpcFunction {
-  (call, callback: CallbackFunc, next?: Function): void
+  (call, callback: CallbackFunc, next?: Function): void;
 }
 
 export interface CallbackFunc {
-  (error: Error, data: any): void
+  (error: Error, data: any): void;
 }

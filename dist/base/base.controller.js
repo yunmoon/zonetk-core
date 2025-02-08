@@ -25,8 +25,8 @@ class BaseController {
             });
         });
     }
-    async transform(item, transformerObj) {
-        return await transformerObj.resolve(item);
+    async transform(item, transformerObj, includes) {
+        return await transformerObj.resolve(item, includes);
     }
 }
 __decorate([

@@ -6,9 +6,9 @@ export interface ZonetkPlugin<T> {
     resolve(): T;
 }
 export declare abstract class Transformer {
-    resolve(item: any | any[]): Promise<any>;
-    abstract item(item: any): Promise<any>;
-    abstract collection(item: any[]): Promise<any>;
+    resolve(item: any | any[], includes?: string[]): Promise<any>;
+    abstract item(item: any, includes?: string[]): Promise<any>;
+    abstract collection(item: any[], includes?: string[]): Promise<any>;
 }
 export interface ScheduleInterface {
     targetHost?: string | {
