@@ -1,6 +1,5 @@
 import { saveModule } from 'injection';
 import { RPC_KEY } from '../constant'
-import { isFunction } from "util";
 import { GrpcFunction } from "../interface";
 
 export function rpcService(args?: rpcServiceOptions): ClassDecorator {
@@ -15,7 +14,7 @@ export function rpcService(args?: rpcServiceOptions): ClassDecorator {
       if (key === "constructor") continue;
       const desc = Object.getOwnPropertyDescriptor(constructor.prototype, key);
       const method = desc.value;
-      if (!isFunction(method)) {
+      if (typeof method !== 'function') {
         continue;
       }
       desc.value = function (call, callback) {

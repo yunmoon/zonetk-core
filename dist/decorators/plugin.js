@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.plugin = void 0;
 const path = require("path");
 const appDir = process.cwd();
 function isTypeScriptEnvironment() {

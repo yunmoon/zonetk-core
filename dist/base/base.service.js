@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BaseService = void 0;
 const typeorm_1 = require("typeorm");
 const injection_1 = require("injection");
 const decorators_1 = require("../decorators");
@@ -23,7 +24,8 @@ class BaseService {
         if (!this.ctx && !requestId) {
             const rpcCall = this.rpcRequestCall;
             if (rpcCall && rpcCall.request.headers) {
-                requestId = rpcCall.request.headers[this.requestIdKey || "requestId"] || "";
+                requestId =
+                    rpcCall.request.headers[this.requestIdKey || "requestId"] || "";
             }
         }
         return this.log.child({ requestId: requestId });
@@ -39,7 +41,9 @@ class BaseService {
         return this.getRepository(tm).findOne(options);
     }
     findById(id, tm) {
-        return this.getRepository(tm).findOne(id);
+        return this.getRepository(tm).findOne({
+            where: { id }
+        });
     }
     findAll(options, tm) {
         return this.getRepository(tm).find(options);

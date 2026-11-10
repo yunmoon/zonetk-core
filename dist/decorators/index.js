@@ -1,13 +1,20 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./config"));
-__export(require("./logger"));
-__export(require("./midwayjs-decorator"));
-__export(require("./plugin"));
-__export(require("./rpc"));
-__export(require("./schedule"));
-__export(require("./rpcMiddleware"));
+__exportStar(require("./config"), exports);
+__exportStar(require("./logger"), exports);
+__exportStar(require("./midwayjs-decorator"), exports);
+__exportStar(require("./plugin"), exports);
+__exportStar(require("./rpc"), exports);
+__exportStar(require("./schedule"), exports);
+__exportStar(require("./rpcMiddleware"), exports);
 //# sourceMappingURL=index.js.map

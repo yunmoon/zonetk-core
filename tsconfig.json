@@ -14,7 +14,11 @@
          "es2017",
          "dom"
       ],
-      "sourceMap": true
+      "sourceMap": true,
+      "skipLibCheck": true,
+      "types": [
+         "node"
+      ]
    },
    "exclude": [
       "dist",

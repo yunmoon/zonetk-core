@@ -28,6 +28,6 @@ export declare class ZonetkApplication extends KOAApplication {
     generateController(controllerMapping: string): (ctx: any, next: any) => Promise<any>;
     ready(): Promise<void>;
     private prepareContext;
-    readonly applicationContext: MidwayContainer;
+    get applicationContext(): MidwayContainer;
     getHttpAdapter(): any;
 }

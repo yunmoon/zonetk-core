@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ZonetkApplication = void 0;
 const decorator_1 = require("@midwayjs/decorator");
 const injection_1 = require("injection");
 const midway_core_1 = require("midway-core");

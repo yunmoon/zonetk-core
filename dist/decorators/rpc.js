@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rpcService = void 0;
 const injection_1 = require("injection");
 const constant_1 = require("../constant");
-const util_1 = require("util");
 function rpcService(args) {
     const middlewares = (args && args.middlewares) || [];
     if (!Array.isArray(middlewares))
@@ -18,7 +18,7 @@ function rpcService(args) {
                 continue;
             const desc = Object.getOwnPropertyDescriptor(constructor.prototype, key);
             const method = desc.value;
-            if (!util_1.isFunction(method)) {
+            if (typeof method !== 'function') {
                 continue;
             }
             desc.value = function (call, callback) {
